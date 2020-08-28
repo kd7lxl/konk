@@ -52,6 +52,22 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+apiserver labels
+*/}}
+{{- define "apiserver.labels" -}}
+{{ include "konk.labels" . }}
+app.kubernetes.io/component: apiserver
+{{- end }}
+
+{{/*
+apiserver Selector labels
+*/}}
+{{- define "apiserver.selectorLabels" -}}
+{{ include "konk.selectorLabels" . }}
+app.kubernetes.io/component: apiserver
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "konk.serviceAccountName" -}}
