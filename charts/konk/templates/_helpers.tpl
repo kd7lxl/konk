@@ -6,6 +6,10 @@ Expand the name of the chart.
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
+{{- define "apiserver.name" -}}
+apiserver
+{{- end }}
+
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
@@ -22,6 +26,10 @@ If release name contains chart name it will be used as a full name.
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
 {{- end }}
 {{- end }}
+{{- end }}
+
+{{- define "apiserver.fullname" -}}
+{{ include "konk.fullname" . }}-{{ include "apiserver.name" . }}
 {{- end }}
 
 {{/*
@@ -49,6 +57,22 @@ Selector labels
 {{- define "konk.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "konk.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+apiserver labels
+*/}}
+{{- define "apiserver.labels" -}}
+{{ include "konk.labels" . }}
+app.kubernetes.io/component: {{ include "apiserver.name" . }}
+{{- end }}
+
+{{/*
+apiserver Selector labels
+*/}}
+{{- define "apiserver.selectorLabels" -}}
+{{ include "konk.selectorLabels" . }}
+app.kubernetes.io/component: {{ include "apiserver.name" . }}
 {{- end }}
 
 {{/*
