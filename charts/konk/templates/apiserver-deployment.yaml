@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "konk.fullname" . }}
+  name: {{ include "konk.fullname" . }}-apiserver
   labels:
     {{- include "konk.labels" . | nindent 4 }}
 spec:
@@ -28,7 +28,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: apiserver
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -39,16 +39,12 @@ spec:
             - --etcd-cafile=/etc/kubernetes/pki/apiserver/etcd/ca.pem
             - --etcd-certfile=/etc/kubernetes/pki/apiserver/etcd/cert.pem
             - --etcd-keyfile=/etc/kubernetes/pki/apiserver/etcd/key.pem
-            - --etcd-servers=https://127.0.0.1:4001 # TODO: provision etcd
-            # TODO: mount certs
+            - --etcd-servers=https://{{ .Release.Name }}-etcd-headless:2379 # TODO: resolve port from values
           ports:
             - name: https
               containerPort: 443
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: https
+          # livenessProbe: TODO
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
