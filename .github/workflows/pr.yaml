@@ -1,0 +1,13 @@
+name: PR
+on: pull_request
+jobs:
+  build:
+    env:
+      SRC: src/github.com/${{github.repository}}
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Unit tests
+        working-directory: ${{ github.workspace }}/src/github.com/${{ github.repository }}
+        run: |
+          make helm-lint
